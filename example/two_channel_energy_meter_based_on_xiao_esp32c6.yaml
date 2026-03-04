@@ -55,11 +55,9 @@ web_server:
 
 external_components:
   - source:
-      type: git
-      url: file://$pwd
-      ref: main
+      type: local
+      path: $pwd/components
     components: [ bl0939 ]
-    refresh: 0s
 
 debug:
 

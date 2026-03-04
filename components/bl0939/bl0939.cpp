@@ -26,8 +26,8 @@ const uint8_t BL0939_INIT[6][6] = {
     {BL0939_WRITE_COMMAND, BL0939_REG_SOFT_RESET, 0x5A, 0x5A, 0x5A, 0x33},
     // Enable User Operation Write
     {BL0939_WRITE_COMMAND, BL0939_REG_USR_WRPROT, 0x55, 0x00, 0x00, 0xEB},
-    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 50Hz, RMS_UPDATE_SEL 800mS
-    {BL0939_WRITE_COMMAND, BL0939_REG_MODE, 0x00, 0x10, 0x00, 0x32},
+    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 60Hz, RMS_UPDATE_SEL 800mS
+    {BL0939_WRITE_COMMAND, BL0939_REG_MODE, 0x00, 0x10, 0x01, 0x32},
     // 0x47FF = Over-current and leakage alarm on, Automatic temperature measurement, Interval 100mS
     {BL0939_WRITE_COMMAND, BL0939_REG_TPS_CTRL, 0xFF, 0x47, 0x00, 0xF9},
     // 0x181C = Half cycle, Fast RMS threshold 6172
@@ -71,6 +71,20 @@ void BL0939::update() {
 }
 
 void BL0939::setup() {
+  if (this->work_mode_ == "current_transformer_mode") {
+    ESP_LOGD(TAG, "work mode is current_transformer_mode");
+    power_reference_ = BL0939_PREF_CT;
+    voltage_reference_ = BL0939_UREF_CT;
+    current_reference_ = BL0939_IREF_CT;
+    energy_reference_ = BL0939_EREF_CT;
+  } else {
+    ESP_LOGD(TAG, "work mode is current_transformer_mode");
+    power_reference_ = BL0939_PREF;
+    voltage_reference_ = BL0939_UREF;
+    current_reference_ = BL0939_IREF;
+    energy_reference_ = BL0939_EREF;
+  }
+
   for (auto *i : BL0939_INIT) {
     this->write_array(i, 6);
     delay(1);
