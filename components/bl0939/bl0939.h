@@ -76,6 +76,7 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
   void set_energy_sensor_2(sensor::Sensor *energy_sensor_2) { energy_sensor_2_ = energy_sensor_2; }
   void set_energy_sensor_sum(sensor::Sensor *energy_sensor_sum) { energy_sensor_sum_ = energy_sensor_sum; }
   void set_work_mode(std::string work_mode) { work_mode_ = std::move(work_mode); }
+  void set_work_frequency(std::string work_frequency) { work_frequency_ = std::move(work_frequency); }
 
   void loop() override;
 
@@ -95,6 +96,7 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *energy_sensor_2_{nullptr};
   sensor::Sensor *energy_sensor_sum_{nullptr};
   std::string work_mode_;
+  std::string work_frequency_;
   // Divide by this to turn into Watt
   float power_reference_;
   // Divide by this to turn into Volt

@@ -4,6 +4,7 @@ substitutions:
 esphome:
   name: seeedstudio-2ch-em
   friendly_name: SeeedStudio-2CH-EM
+  min_version: 2026.5.1
   on_boot: 
     priority: 100
     then:
@@ -66,11 +67,12 @@ uart:
   rx_pin: GPIO17
   baud_rate: 4800
   stop_bits: 2
-  #rx_full_threshold: 48
+  rx_full_threshold: 48
 
 sensor:
   - platform: bl0939
     mode: "current_transformer_mode"
+    frequency: "60Hz"
 
     voltage:
       name: "BL0939 Voltage"

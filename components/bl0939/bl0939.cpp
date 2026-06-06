@@ -26,8 +26,8 @@ const uint8_t BL0939_INIT[6][6] = {
     {BL0939_WRITE_COMMAND, BL0939_REG_SOFT_RESET, 0x5A, 0x5A, 0x5A, 0x33},
     // Enable User Operation Write
     {BL0939_WRITE_COMMAND, BL0939_REG_USR_WRPROT, 0x55, 0x00, 0x00, 0xEB},
-    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 60Hz, RMS_UPDATE_SEL 800mS
-    {BL0939_WRITE_COMMAND, BL0939_REG_MODE, 0x00, 0x10, 0x01, 0x32},
+    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 50Hz, RMS_UPDATE_SEL 800mS
+    {BL0939_WRITE_COMMAND, BL0939_REG_MODE, 0x00, 0x10, 0x00, 0x32},
     // 0x47FF = Over-current and leakage alarm on, Automatic temperature measurement, Interval 100mS
     {BL0939_WRITE_COMMAND, BL0939_REG_TPS_CTRL, 0xFF, 0x47, 0x00, 0xF9},
     // 0x181C = Half cycle, Fast RMS threshold 6172
@@ -71,6 +71,10 @@ void BL0939::update() {
 }
 
 void BL0939::setup() {
+  uint8_t BL0939_CUSTOM[1][6] = {
+    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 0x00=50Hz 0x01=60Hz, RMS_UPDATE_SEL 800mS
+    {BL0939_WRITE_COMMAND, BL0939_REG_MODE, 0x00, 0x10, 0x00, 0x32}};
+
   if (this->work_mode_ == "current_transformer_mode") {
     ESP_LOGD(TAG, "work mode is current_transformer_mode");
     power_reference_ = BL0939_PREF_CT;
@@ -86,6 +90,19 @@ void BL0939::setup() {
   }
 
   for (auto *i : BL0939_INIT) {
+    this->write_array(i, 6);
+    delay(1);
+  }
+  this->flush();
+
+  if (this->work_frequency_ == "60hz") {
+    ESP_LOGV(TAG, "work frequency is set to 60hz");
+    BL0939_CUSTOM[1][5] = 0x01;
+  } else {
+    ESP_LOGV(TAG, "work frequency is defaulted to 50Hz");
+  }
+
+  for (auto *i : BL0939_CUSTOM) {
     this->write_array(i, 6);
     delay(1);
   }

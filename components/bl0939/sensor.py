@@ -4,6 +4,7 @@ import esphome.config_validation as cv
 from esphome.const import (
     CONF_ID,
     CONF_MODE,
+    CONF_FREQUENCY,
     CONF_VOLTAGE,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_ENERGY,
@@ -36,6 +37,7 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(BL0939),
             cv.Optional(CONF_MODE, default=""): cv.string,
+            cv.Optional(CONF_FREQUENCY, default=""): cv.string,
             cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
                 unit_of_measurement=UNIT_VOLT,
                 accuracy_decimals=1,
@@ -97,6 +99,8 @@ async def to_code(config):
     await uart.register_uart_device(var, config)
     if work_mode_config := config.get(CONF_MODE):
         cg.add(var.set_work_mode(work_mode_config))
+    if work_frequency_config := config.get(CONF_FREQUENCY):
+        cg.add(var.set_work_frequency(work_frequency_config))
     if voltage_config := config.get(CONF_VOLTAGE):
         sens = await sensor.new_sensor(voltage_config)
         cg.add(var.set_voltage_sensor(sens))
